@@ -3,7 +3,7 @@ import connection from '@/lib/db';
 
 export async function GET(request : Request) {
     try {
-        const [rows] = await (await connection).execute("SELECT * FROM incomeexpenses ORDER BY id DESC");
+        const [rows] = await (await connection).execute("SELECT * FROM incomeexpenses ORDER BY spent_at DESC");
         
         return NextResponse.json(rows);
       } catch (error) {

@@ -125,24 +125,51 @@ export default function ToDoList({list}: {list: List[]}) {
   const handleMonthChange = (event : any) => {
     setSelectedMonth(event.target.value);
     
-    console.log(event.target.value);
-    const currentItem = list.find((item) =>new Date(item.spent_at).getMonth() + 1 === parseInt(event.target.value))
-    if (currentItem) {
-        setListData([currentItem])
-    }
-    else{
-        const list = {
-            id: -1, // Assign a default or placeholder ID
+    // console.log(event.target.value);
+    const filteredList = list.filter(
+        (item) => new Date(item.spent_at).getMonth() + 1 === parseInt(event.target.value)
+    );
+    setListData(filteredList.length > 0 ? filteredList : [
+        {
+            id: -1,
             listname: 'No data',
             amount: 0,
             spent_at: new Date(),
             type: 'No data',
             created_at: new Date(),
             updated_at: new Date(),
-        }
-        setListData([list])
-    }
+        },
+    ]);
+   
   };
+
+   const Summary = () => {
+    const incomeData = listdata.filter((item) => item.type === 'income');
+    const expenseData = listdata.filter((item) => item.type === 'expense');
+
+    let totalIncome = 0;
+    incomeData.forEach(element => {
+        totalIncome += parseFloat(parseFloat(element.amount.toString()).toFixed(2))
+    });
+    // console.log(totalIncome);
+
+    let totalExpense = 0;
+    expenseData.forEach(element => {
+        totalExpense += parseFloat(parseFloat(element.amount.toString()).toFixed(2))
+    });
+    // console.log(totalExpense);
+
+    const balance = totalIncome - totalExpense;
+    // console.log(balance);
+    
+    return (
+        <div className='text-white mt-4'>
+            <h2>Total Income: {totalIncome.toFixed(2)}</h2>
+            <h2>Total Expense: {totalExpense.toFixed(2)}</h2>
+            <h2>Balance: {balance.toFixed(2)}</h2>
+        </div>
+    )
+   }
   return (
     <div className='w-full'>
         <div className=" md:flex space-x-2 mt-4 w-full">
@@ -227,7 +254,7 @@ export default function ToDoList({list}: {list: List[]}) {
                
             </tbody>
         </table>
-            
+        {Summary()}
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div>
         <input
